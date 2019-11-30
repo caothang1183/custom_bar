@@ -20,10 +20,11 @@ class ChartPage extends StatefulWidget {
     final List<ChartData> data;
 
     const ChartPage(
-        {Key key, this.width = 200, this.height = 250, this.weightBar = 30, this.weightStroke = 1,
-            this.labelPadding = 8, this.dataPadding = 8, this.barsPadding = 5, this.chartPadding = 24,
-            this.dataFontSize = 14, this.dataColor = Colors.black, this.dataInsideFontSize = 12,
-            this.dataInsideColor = Colors.black, this.dataInsidePadding = 5, this.data})
+        {Key key, this.width = 230, this.height = 150, this.weightBar = 30, this.weightStroke = 1,
+            this.labelPadding = 8, this.dataPadding = 8, this.barsPadding = 0, this.chartPadding = 24,
+            this.dataFontSize = 14, this.dataColor = Colors
+            .black, this.dataInsideFontSize = 12,
+            this.dataInsideColor = Colors.black, this.dataInsidePadding = 0, this.data})
         : super(key: key);
 
 
@@ -49,26 +50,40 @@ class _ChartPageState extends State<ChartPage> {
         return SafeArea(
             child: Scaffold(
                 body: Container(
-                    alignment: Alignment.center,
-                    height: widget.height,
                     padding: EdgeInsets.all(widget.chartPadding),
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                            Text("Bar Chart"),
+                    alignment: Alignment.center,
+                    child: Wrap(
+                        children: [
                             Container(
-                                height: 200,
+                                height: widget.height +
+                                    (widget.barsPadding * 3),
                                 padding: EdgeInsets.only(top: 8),
-                                child: Column(
-                                    mainAxisSize: MainAxisSize.max,
+                                child: Row(
                                     children: <Widget>[
-                                        ...List.generate(
-                                            _data.length, (index) =>
-                                            _itemView(_data[index])),
+                                        Column(
+                                            crossAxisAlignment: CrossAxisAlignment
+                                                .start,
+                                            mainAxisAlignment: MainAxisAlignment
+                                                .spaceAround,
+                                            children: <Widget>[
+                                                ...List.generate(
+                                                    _data.length, (index) =>
+                                                    _titleChart(_data[index])),
+                                            ]),
+                                        Column(
+                                            crossAxisAlignment: CrossAxisAlignment
+                                                .start,
+                                            mainAxisAlignment: MainAxisAlignment
+                                                .spaceAround,
+                                            children: <Widget>[
+                                                ...List.generate(
+                                                    _data.length, (index) =>
+                                                    _itemChart(_data[index])),
+                                            ],
+                                        ),
                                     ],
                                 ),
-                            )
+                            ),
                         ],
                     ),
                 ),
@@ -76,22 +91,33 @@ class _ChartPageState extends State<ChartPage> {
         );
     }
 
-    _itemView(ChartData data) {
-        double dataRenderBar = data.data;
+    _titleChart(ChartData data) {
         return Container(
-            padding: EdgeInsets.fromLTRB(
-                0, widget.barsPadding, 0, widget.barsPadding),
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
-                mainAxisSize: MainAxisSize.max,
-                children: <Widget>[
-                    Padding(
-                        padding: EdgeInsets.only(right: widget.labelPadding),
+                children: [
+                    Container(
+                        padding: EdgeInsets.only(
+                            right: widget.labelPadding,
+                        ),
                         child: Text(data.displayName),
                     ),
+                ]
+            ),
+        );
+    }
+
+    _itemChart(ChartData data) {
+        double dataRenderBar = data.data;
+        return Container(
+            child: Row(
+                children: <Widget>[
                     _initChildView(data.child.length > 0, data),
-                    Padding(
-                        padding: EdgeInsets.only(left: widget.dataPadding),
+                    Container(
+                        height: widget.weightBar,
+                        alignment: Alignment.center,
+                        padding: EdgeInsets.fromLTRB(
+                            widget.dataPadding, 0, 0, 0),
                         child: Text(
                             dataRenderBar.round().toString(),
                             style: TextStyle(
@@ -101,7 +127,6 @@ class _ChartPageState extends State<ChartPage> {
                             ),
                         ),
                     ),
-
                 ],
             ),
         );
@@ -125,11 +150,12 @@ class _ChartPageState extends State<ChartPage> {
                                         color: childList[index].color,
                                         width: (parentWidth *
                                             childList[index].data / data.data) -
-                                            widget.weightStroke,
+                                            _weightStroke(index, childList),
                                         child: Container(
                                             height: widget.weightBar,
                                             alignment: Alignment.centerLeft,
-                                            padding: EdgeInsets.only(left: widget.dataPadding),
+                                            padding: EdgeInsets.only(
+                                                left: widget.dataPadding),
                                             child: Text('${childList[index]
                                                 .displayName} ${childList[index]
                                                 .data.round()}',
@@ -141,8 +167,7 @@ class _ChartPageState extends State<ChartPage> {
                                                 ),),
                                         ),
                                     ),
-                                    Padding(padding: EdgeInsets.only(
-                                        right: widget.weightStroke))
+                                   Padding(padding: EdgeInsets.only(right: _weightStroke(index, childList)),)
                                 ],
                             ),
                         ),
@@ -156,6 +181,13 @@ class _ChartPageState extends State<ChartPage> {
                 color: data.color,
             );
         }
+    }
+
+    double _weightStroke(int index, List<ChildChartData> childList) {
+        if (index < childList.length - 1) {
+            return widget.weightStroke;
+        }
+        return 0;
     }
 
     double sumData(List<ChildChartData> child) {

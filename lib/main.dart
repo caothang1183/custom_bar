@@ -8,14 +8,17 @@ void main() => runApp(App());
 class App extends StatelessWidget {
     List<ChartData> data = [
         ChartData(
-            displayName: "Data 1", data: 19, color: Colors.red.shade900),
-        ChartData(displayName: "Data 2", data: 14,
+            displayName: "Data 1", data: 15, color: Colors.red.shade900),
+        ChartData(displayName: "Data 22323 ", data: 14,
             child: [
                 ChildChartData(displayName: "Bata",
-                    data: 10,
+                    data: 7,
                     color: Colors.red.shade500),
                 ChildChartData(displayName: "Ata",
                     data: 4,
+                    color: Colors.red.shade500),
+                ChildChartData(displayName: "Cata",
+                    data: 3,
                     color: Colors.red.shade500),
             ],
         ),
@@ -33,10 +36,10 @@ class App extends StatelessWidget {
             ),
             home: ChartPage(
                 data: data,
-                width: 250,
-                height: 400,
-                chartPadding: 12,
+                chartPadding: 24,
                 weightBar: 40,
+                barsPadding: 5,
+                weightStroke: 2,
                 dataInsideColor: Colors.white,
                 dataInsideFontSize: 9,
             ),
